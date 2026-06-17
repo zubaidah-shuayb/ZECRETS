@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZECRETS | Drop a Whisper</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<div class="void-bg-overlay"></div>
+
+<div class="gate-container">
+
+    <header>
+        <div class="void-z-logo">Z</div>
+        <h1 class="brand-title" id="receiverTitle">TO: UNKNOWN</h1>
+    </header>
+
+    <main class="vault-prompt">
+        <p class="primary-prompt">
+            Leave an Anonymous Whisper.
+        </p>
+
+        <p class="secondary-prompt">
+            They will never find out who sent this.
+            Speak completely free.
+        </p>
+    </main>
+
+    <form class="message-form" id="messageForm">
+
+        <div class="textarea-wrapper">
+
+            <textarea
+                id="secretMessage"
+                maxlength="500"
+                placeholder="Type your secret here... maximum 500 characters..."
+                required
+            ></textarea>
+
+            <div class="form-meta">
+                <span id="charCount">0 / 500</span>
+            </div>
+
+        </div>
+
+        <button type="submit" class="commence-btn" id="sendBtn">
+            DROP INTO THE VOID
+        </button>
+
+    </form>
+
+    <footer class="gate-footer">
+        [ SECURE END-TO-END ANONYMITY ]
+    </footer>
+
+</div>
+
+<script>
+let receiverUsername = null;
+
+// ======================
+// GET RECEIVER FROM URL
+// ======================
+function getReceiver() {
+    const path = window.location.pathname; 
+    const parts = path.split("/");
+
+    console.log("PATH:", path);
+    console.log("PARTS:", parts);
+
+    receiverUsername = parts[2];
+
+
+    if (!receiverUsername) {
+        document.getElementById("receiverTitle").innerText = "INVALID LINK";
+        receiverUsername = null;
+        return;
+    }
+
+    document.getElementById("receiverTitle").innerText =
+        "TO: " + receiverUsername.toUpperCase();
+}
+
+// ======================
+// CHARACTER COUNTER
+// ======================
+const textarea = document.getElementById("secretMessage");
+const charCount = document.getElementById("charCount");
+
+textarea.addEventListener("input", () => {
+    charCount.innerText = `${textarea.value.length} / 500`;
+
+    if (textarea.value.length >= 500) {
+        charCount.style.color = "#ff007f";
+    } else {
+        charCount.style.color = "#444";
+    }
+});
+
+// ======================
+// SEND MESSAGE
+// ======================
+document.getElementById("messageForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const message = textarea.value.trim();
+    const btn = document.getElementById("sendBtn");
+
+    // ❌ BLOCK INVALID RECEIVER
+    if (!receiverUsername) {
+        alert("Invalid receiver link");
+        return;
+    }
+
+    if (!message) return;
+
+    btn.innerText = "SENDING...";
+
+    try {
+        const res = await fetch("/api/messages/send", {
+            method: "POST",
+             credentials: "include", // 🔥 THIS IS THE KEY FIX
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                receiverUsername,
+                message
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            btn.innerText = "SENT ✔";
+
+            textarea.value = "";
+            charCount.innerText = "0 / 500";
+            charCount.style.color = "#444";
+
+        } else {
+            btn.innerText = "FAILED";
+            alert(data.error || "Message failed");
+        }
+
+        setTimeout(() => {
+            btn.innerText = "DROP INTO THE VOID";
+        }, 2000);
+
+    } catch (err) {
+        console.log(err);
+        btn.innerText = "ERROR";
+    }
+});
+
+getReceiver();
+</script>
+
+</body>
+</html>

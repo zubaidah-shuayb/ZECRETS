@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZECRETS | Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="void-bg-overlay"></div>
+
+<div class="dashboard-container">
+
+    <header class="dash-header">
+        <div class="dash-brand">
+            <span class="void-z-mini">Z</span>
+            <h2>ZECRETS</h2>
+        </div>
+
+        <a href="/logout" class="logout-btn">LOGOUT</a>
+    </header>
+
+    <!-- LINK SECTION -->
+    <section class="conduit-card">
+        <h3>YOUR ANONYMOUS LINK</h3>
+
+        <p class="card-subtitle">
+            Share this link to receive whispers from the void.
+        </p>
+
+        <div class="link-box">
+            <input type="text" id="shareLink" readonly>
+
+            <button onclick="copyLink()" class="copy-btn">
+                COPY
+            </button>
+        </div>
+    </section>
+
+    <!-- MESSAGES -->
+    <section class="feed-section">
+
+        <div class="feed-header">
+            <h3>YOUR MESSAGES</h3>
+            <span class="msg-count" id="msgCount">0 ARCHIVED</span>
+        </div>
+
+        <div class="message-feed" id="messageFeed"></div>
+
+    </section>
+
+</div>
+
+<script>
+let currentUser = null;
+
+// =====================
+// INIT DASHBOARD
+// =====================
+async function initDashboard() {
+    try {
+        const res = await fetch("/me");
+        const data = await res.json();
+
+        console.log("ME:", data);
+
+        const user = data;
+
+        // if not logged in
+        if (!user) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        currentUser = user;
+
+        // safe username fallback
+        const username = user.username || (user.email ? user.email.split("@")[0] : null);
+
+
+        if (!username) {
+            alert("Username not found");
+            return;
+        }
+
+
+        // IMPORTANT: your real send page is send-message.html
+        document.getElementById("shareLink").value =
+            `${window.location.origin}/u/${username}`;
+
+        loadMessages(username);
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// =====================
+// LOAD MESSAGES
+// =====================
+async function loadMessages(username) {
+    try {
+        const res = await fetch(`/api/messages/${username}`);
+        const messages = await res.json();
+
+        const feed = document.getElementById("messageFeed");
+        const count = document.getElementById("msgCount");
+
+        feed.innerHTML = "";
+
+        count.innerText = `${messages.length} ARCHIVED`;
+
+        if (!messages.length) {
+            feed.innerHTML = "<p style='opacity:0.6'>No messages yet...</p>";
+            return;
+        }
+
+        messages.forEach(msg => {
+            const div = document.createElement("div");
+            div.className = "message-card";
+
+            div.innerHTML = `
+                <div class="message-meta">
+                    <span class="timestamp">
+                        ${new Date(msg.createdAt || Date.now()).toLocaleString()}
+                    </span>
+                </div>
+                <p class="message-text">"${msg.message}"</p>
+            `;
+
+            feed.appendChild(div);
+        });
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// =====================
+// COPY LINK
+// =====================
+function copyLink() {
+    const copyText = document.getElementById("shareLink");
+
+    if (!copyText.value) return;
+
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+
+    navigator.clipboard.writeText(copyText.value);
+
+    const btn = document.querySelector(".copy-btn");
+
+    btn.innerText = "COPIED";
+
+    setTimeout(() => {
+        btn.innerText = "COPY";
+    }, 2000);
+}
+
+// start
+initDashboard();
+</script>
+
+</body>
+</html>

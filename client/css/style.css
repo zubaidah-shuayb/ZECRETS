@@ -1,0 +1,539 @@
+/* ==========================================  
+   1. GLOBAL STYLES & CORE VARIABLES   
+   ========================================== */  
+:root {  
+    --void-black: #000000;  
+    --neon-pink: #ff007f;  
+    --dim-gray: #444444;  
+    --glow-shadow: 0 0 15px rgba(255, 0, 127, 0.4);  
+}  
+  
+* {  
+    margin: 0;  
+    padding: 0;  
+    box-sizing: border-box;  
+    font-family: 'Courier New', Courier, monospace;  
+    letter-spacing: 2px;  
+}  
+  
+body {  
+    background-color: var(--void-black);  
+    color: #ffffff;  
+    min-height: 100vh;  
+    display: flex;  
+    justify-content: center;  
+    align-items: center;  
+    overflow-x: hidden;  
+}  
+  
+/* Abstract Network Geometry Background Overlay */  
+.void-bg-overlay {  
+    position: fixed;  
+    top: 0;  
+    left: 0;  
+    width: 100vw;  
+    height: 100vh;  
+    background:   
+        linear-gradient(rgba(10, 0, 0, 0.95), rgba(0, 0, 0, 0.98)),  
+        radial-gradient(circle at 50% 50%, rgba(247, 0, 124, 0.15) 0%, transparent 40%);  
+    z-index: -1;  
+    overflow: hidden;  
+}  
+  
+.void-bg-overlay::before {  
+    content: '';  
+    position: absolute;  
+    width: 200%;  
+    height: 200%;  
+    top: -50%;  
+    left: -50%;  
+    background-image:   
+        linear-gradient(rgba(255, 20, 147, 0.10) 0.5px, transparent 1px),  
+        linear-gradient(90deg, rgba(255, 20, 147, 0.18) 0.1px, transparent 1px);  
+    background-size: 60px 60px;  
+    transform: rotate(15deg);  
+    animation: gridMatrixGlitch 5s infinite linear; /* Subtle crawling grid animation */  
+}  
+  
+  
+/* ==========================================  
+   2. ENTRY POINT & LOGIN VIEWS (Portrait)  
+   ========================================== */  
+  
+/* Universal Gate Wrapper - Adds an eye-gluing slide up fade-in */  
+.gate-container {  
+    width: 100%;  
+    max-width: 420px;  
+    min-height: 100vh;  
+    padding: 40px 25px;  
+    display: flex;  
+    flex-direction: column;  
+    justify-content: center;  
+    align-items: center;  
+    text-align: center;  
+    position: relative;  
+    z-index: 2;  
+    animation: terminalEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;  
+}  
+  
+/* Brand Typography */  
+.void-z-logo {  
+    font-size: 5rem;  
+    font-weight: 900;  
+    color: var(--neon-pink);  
+    text-shadow: 0 0 20px rgba(255, 0, 127, 0.6), 0 0 40px rgba(255, 0, 127, 0.3);  
+    margin-bottom: 5px;  
+    animation: neonFlicker 6s infinite alternate;  
+}  
+  
+.brand-title {  
+    font-size: 1.6rem;  
+    font-weight: bold;  
+    letter-spacing: 8px;  
+    margin-bottom: 45px;  
+    color: #ffffff;  
+}  
+  
+/* Context Prompts */  
+.vault-prompt {  
+    margin-bottom: 60px;  
+    max-width: 320px;  
+}  
+  
+.primary-prompt {  
+    font-size: 0.95rem;  
+    color: #ffffff;  
+    margin-bottom: 10px;  
+    text-transform: uppercase;  
+    line-height: 1.6;  
+}  
+  
+.secondary-prompt {  
+    font-size: 0.75rem;  
+    color: var(--neon-pink);  
+    opacity: 0.8;  
+    letter-spacing: 1px;  
+}  
+  
+/* Action Button */  
+.commence-btn {  
+    display: inline-block;  
+    width: 100%;  
+    background: transparent;  
+    border: 1px solid var(--neon-pink);  
+    color: #ffffff;  
+    padding: 18px 0;  
+    font-size: 0.85rem;  
+    text-transform: uppercase;  
+    text-decoration: none;  
+    font-weight: bold;  
+    letter-spacing: 4px;  
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);  
+    box-shadow: var(--glow-shadow);  
+    cursor: pointer;  
+}  
+  
+.commence-btn:hover {  
+    background: var(--neon-pink);  
+    color: #000000;  
+    box-shadow: 0 0 30px var(--neon-pink), 0 0 60px rgba(255, 0, 127, 0.4);  
+    transform: scale(1.02);  
+}  
+  
+/* Google Auth Button */  
+.google-sign-in-btn {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    height: 50px;
+
+    background: #000;
+    border: 1px solid #222;
+
+    border-radius: 10px;
+    overflow: hidden;
+
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+  
+.google-icon-svg {  
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* fills entire box */
+    display: block;
+    filter: grayscale(100%) brightness(150%);  
+    transition: filter 0.4s ease;  
+}  
+
+  
+.google-sign-in-btn:hover {  
+    border-color: var(--neon-pink);  
+    color: #ffffff;  
+    box-shadow: var(--glow-shadow);  
+}  
+  
+.google-sign-in-btn:hover .google-icon-svg {  
+    filter: none;  
+}  
+  
+.gate-footer {  
+    position: absolute;  
+    bottom: 30px;  
+    font-size: 0.6rem;  
+    color: #333333;  
+    text-transform: uppercase;  
+}  
+  
+  
+/* ==========================================  
+   3. DASHBOARD VIEW STYLES  
+   ========================================== */  
+.dashboard-container {  
+    width: 100%;  
+    max-width: 480px;  
+    min-height: 100vh;  
+    padding: 30px 20px;  
+    display: flex;  
+    flex-direction: column;  
+    gap: 35px;  
+    z-index: 2;  
+    position: relative;  
+    animation: terminalEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;  
+}  
+  
+.dash-header {  
+    display: flex;  
+    justify-content: space-between;  
+    align-items: center;  
+    border-bottom: 1px dashed var(--dim-gray);  
+    padding-bottom: 15px;  
+}  
+  
+.dash-brand {  
+    display: flex;  
+    align-items: center;  
+    gap: 10px;  
+}  
+  
+.void-z-mini {  
+    font-size: 1.5rem;  
+    font-weight: bold;  
+    color: var(--neon-pink);  
+    text-shadow: var(--glow-shadow);  
+}  
+  
+.dash-header h2 {  
+    font-size: 1.1rem;  
+    letter-spacing: 4px;  
+}  
+  
+.logout-btn {  
+    font-size: 0.75rem;  
+    color: #888888;  
+    text-decoration: none;  
+    border: 1px solid #333333;  
+    padding: 6px 12px;  
+    transition: all 0.3s ease;  
+}  
+  
+.logout-btn:hover {  
+    color: #ffffff;  
+    border-color: var(--neon-pink);  
+    background: rgba(255, 0, 127, 0.1);  
+    box-shadow: var(--glow-shadow);  
+}  
+  
+.conduit-card {  
+    background: rgba(5, 5, 5, 0.85);  
+    border: 1px solid #1a1a1a;  
+    padding: 20px;  
+    border-left: 3px solid var(--neon-pink);  
+    animation: slideInModule 0.5s ease-out 0.2s both; /* Staggered loading entry */  
+}  
+  
+.conduit-card h3, .feed-header h3 {  
+    font-size: 0.85rem;  
+    color: #ffffff;  
+    margin-bottom: 5px;  
+}  
+  
+.card-subtitle {  
+    font-size: 0.7rem;  
+    color: #666666;  
+    margin-bottom: 15px;  
+}  
+  
+.link-box {  
+    display: flex;  
+    border: 1px solid #333333;  
+    background: #000000;  
+}  
+  
+.link-box input {  
+    background: transparent;  
+    border: none;  
+    color: var(--neon-pink);  
+    padding: 12px;  
+    font-size: 0.75rem;  
+    width: 100%;  
+    outline: none;  
+}  
+  
+.copy-btn {  
+    background: transparent;  
+    border: none;  
+    border-left: 1px solid #333333;  
+    color: #ffffff;  
+    padding: 0 20px;  
+    font-size: 0.75rem;  
+    cursor: pointer;  
+    transition: all 0.3s ease;  
+}  
+  
+.copy-btn:hover {  
+    background: var(--neon-pink);  
+    color: #000000;  
+    font-weight: bold;  
+}  
+  
+.feed-header {  
+    display: flex;  
+    justify-content: space-between;  
+    align-items: center;  
+    margin-bottom: 20px;  
+}  
+  
+.msg-count {  
+    font-size: 0.7rem;  
+    color: var(--neon-pink);  
+    border: 1px solid var(--neon-pink);  
+    padding: 2px 6px;  
+    box-shadow: inset 0 0 5px rgba(255, 0, 127, 0.2);  
+}  
+  
+.feed-section {  
+    animation: slideInModule 0.6s ease-out 0.3s both; /* Smooth delayed cascade hook */  
+}  
+  
+.message-feed {  
+    display: flex;  
+    flex-direction: column;  
+    gap: 15px;  
+}  
+  
+.message-card {  
+    background: #050505;  
+    border: 1px solid #1a1a1a;  
+    padding: 20px;  
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);  
+    position: relative;  
+}  
+  
+.message-meta {  
+    display: flex;  
+    justify-content: space-between;  
+    margin-bottom: 12px;  
+    font-size: 0.65rem;  
+    color: #444444;  
+}  
+  
+.message-text {  
+    font-size: 0.85rem;  
+    color: #cccccc;  
+    line-height: 1.5;  
+}  
+  
+.message-card:hover {  
+    border-color: var(--neon-pink);  
+    transform: translateY(-2px);  
+    box-shadow: 0 5px 20px rgba(255, 0, 127, 0.15);  
+}  
+  
+.message-card:hover .message-text {  
+    color: #ffffff;  
+}  
+  
+.message-card.urgent {  
+    border-color: #2b0016;  
+}  
+  
+.message-card.urgent .tag {  
+    color: var(--neon-pink);  
+    font-weight: bold;  
+    animation: pulseGlow 2s infinite alternate;  
+}  
+  
+  
+/* ==========================================  
+   4. MESSAGE SUBMISSION FORM STYLES  
+   ========================================== */  
+.message-form {  
+    width: 100%;  
+    display: flex;  
+    flex-direction: column;  
+    gap: 25px;  
+    animation: slideInModule 0.5s ease-out 0.2s both;  
+}  
+  
+.textarea-wrapper {  
+    width: 100%;  
+    border: 1px solid #222222;  
+    background: rgba(5, 5, 5, 0.9);  
+    padding: 15px;  
+    position: relative;  
+    transition: border-color 0.4s ease;  
+}  
+  
+.textarea-wrapper:focus-within {  
+    border-color: var(--neon-pink);  
+    box-shadow: inset 0 0 10px rgba(255, 0, 127, 0.1);  
+}  
+  
+.textarea-wrapper textarea {  
+    width: 100%;  
+    height: 180px;  
+    background: transparent;  
+    border: none;  
+    outline: none;  
+    color: #ffffff;  
+    font-family: 'Courier New', Courier, monospace;  
+    font-size: 0.85rem;  
+    line-height: 1.6;  
+    resize: none;  
+}  
+  
+.textarea-wrapper textarea::placeholder {  
+    color: var(--dim-gray);  
+    opacity: 0.7;  
+}  
+  
+.form-meta {  
+    display: flex;  
+    justify-content: flex-end;  
+    font-size: 0.65rem;  
+    color: var(--dim-gray);  
+    margin-top: 10px;  
+    border-top: 1px dashed #1a1a1a;  
+    padding-top: 10px;  
+}  
+ 
+/* ==========================================  
+   5. SUCCESS STATE VIEW STYLES  
+   ========================================== */  
+.brand-title.success-glow {  
+    color: #ffffff;  
+    text-shadow: 0 0 15px rgba(255, 0, 127, 0.8);  
+    letter-spacing: 6px;  
+}  
+  
+.void-z-logo.success-pulse {  
+    animation: transmitPulse 1.5s infinite ease-in-out;  
+}  
+  
+.success-actions {  
+    width: 100%;  
+    display: flex;  
+    flex-direction: column;  
+    gap: 20px;  
+    animation: slideInModule 0.6s ease-out 0.2s both;  
+}  
+  
+.commence-btn.alternate-btn {  
+    border-color: #333333;  
+    box-shadow: none;  
+}  
+  
+.commence-btn.alternate-btn:hover {  
+    border-color: var(--neon-pink);  
+    background: transparent;  
+    color: var(--neon-pink);  
+    box-shadow: var(--glow-shadow);  
+}  
+  
+.footer-link-alt {  
+    font-size: 0.7rem;  
+    color: #555555;  
+    margin-top: 10px;  
+}  
+  
+.footer-link-alt a {  
+    color: #888888;  
+    text-decoration: none;  
+    border-bottom: 1px dashed #444444;  
+    transition: color 0.3s ease;  
+}  
+  
+.footer-link-alt a:hover {  
+    color: var(--neon-pink);  
+    border-bottom-style: solid;  
+    border-bottom-color: var(--neon-pink);  
+}  
+  
+  
+/* ==========================================  
+   6. POWER ANIMATIONS ENGINE  
+   ========================================== */  
+  
+/* Smooth sliding & scale up for view blocks */  
+@keyframes terminalEntrance {  
+    0% {  
+        opacity: 0;  
+        transform: translateY(20px) scale(0.98);  
+    }  
+    100% {  
+        opacity: 1;  
+        transform: translateY(0) scale(1);  
+    }  
+}  
+  
+/* Cascade layout delays for inner sections */  
+@keyframes slideInModule {  
+    0% {  
+        opacity: 0;  
+        transform: translateY(15px);  
+    }  
+    100% {  
+        opacity: 1;  
+        transform: translateY(0);  
+    }  
+}  
+  
+/* Crawling background matrix matrix speed lines */  
+@keyframes gridMatrixGlitch {  
+    0% {  
+        background-position: 0px 0px;  
+    }  
+    100% {  
+        background-position: 0px 80px;  
+    }  
+}  
+  
+/* Classic Cyber-Glow Neon Text Flickering effect */  
+@keyframes neonFlicker {  
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {  
+        text-shadow: 0 0 20px rgba(255, 0, 127, 0.6), 0 0 40px rgba(255, 0, 127, 0.3);  
+        opacity: 1;  
+    }  
+    20%, 24%, 55% {  
+        text-shadow: none;  
+        opacity: 0.5;  
+    }  
+}  
+  
+@keyframes pulseGlow {  
+    0% { opacity: 0.5; }  
+    100% { opacity: 1; text-shadow: var(--glow-shadow); }  
+}  
+  
+@keyframes transmitPulse {  
+    0%, 100% {  
+        transform: scale(1);  
+        text-shadow: 0 0 20px rgba(255, 0, 127, 0.6);  
+    }  
+    50% {  
+        transform: scale(1.05);  
+        text-shadow: 0 0 35px var(--neon-pink), 0 0 50px var(--neon-pink);  
+        color: #ffffff;  
+    }  
+}
