@@ -10,8 +10,8 @@ const passport = require("./config/passport");
 const connectDB = require("./db");
 const User = require("./models/User");
 
-const messageRoutes = require("./routes/messageRoutes");
-const userRoutes = require("./routes/userRoutes");
+const messageRoutes = require("./routes/MessageRoutes");
+const userRoutes = require("./routes/UserRoutes");
 
 const app = express();
 
